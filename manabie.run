@@ -1,0 +1,16 @@
+#!/bin/bash
+
+echo -e "\n"
+echo "==========="
+echo "waiting...."
+echo "==========="
+echo -e "\n"
+
+while true; do
+	result=`kubectl -n backend get pod | grep gandalf-ci | wc -l`
+	if [ "$result" = "1" ]; then
+		break
+	fi
+	sleep 1
+done
+eval $@
