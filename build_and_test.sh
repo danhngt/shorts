@@ -23,11 +23,12 @@ base_branch=$(\
        	| head -n1 \
        	| sed "s/^.*\[//" \
 )
-folders=$(
+folders="$(
 	git diff "$base_branch" "$previous_branch" --name-only \
 	| test_folders \
 	| sort -u \
-)
+	| xargs -i echo -e "\t{} \\"
+)"
 services="$(\
 	git diff "$base_branch" "$previous_branch" --name-only \
 	| test_services \
@@ -35,22 +36,20 @@ services="$(\
 	| xargs -i echo -e "\t{} \\"
 )"
 
-echo -e "
-#!/bin/bash
+echo -e "#!/bin/bash
+
 ./deployments/build.bash
 ./deployments/build.bash \\
 ${services}
 ;
-" > "$test_file"
 
-for folder in $folders; do
-    echo "manabie.run ./deployments/k8s_bdd_test.bash $folder" >> "$test_file"
-done
+manabie.run ./deployments/k8s_bdd_test.bash \\
+${folders}
+;
 
-echo '
 notify-send -i emblem-default "Done"
 paplay /usr/share/sounds/freedesktop/stereo/complete.oga
-' >> "$test_file"
+" > "$test_file"
 
 vi "$test_file"
 bash "$test_file"
