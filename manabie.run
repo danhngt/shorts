@@ -6,11 +6,14 @@ echo "waiting...."
 echo "==========="
 echo -e "\n"
 
+
 while true; do
-	result=`kubectl -n backend get pod | grep gandalf-ci | wc -l`
-	if [ "$result" = "1" ]; then
-		break
+	if [ $(kubectl -n backend get pod | grep gandalf | wc -l) -eq 2 ]; then
+		if [ $(kubectl -n backend get pod | grep Terminating | wc -l) -eq 0 ]; then
+			break
+		fi
 	fi
 	sleep 1
 done
 eval $@
+
