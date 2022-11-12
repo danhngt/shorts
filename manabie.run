@@ -9,7 +9,7 @@ echo -e "\n"
 
 while true; do
 	if [ $(kubectl -n backend get pod | grep gandalf | wc -l) -eq 2 ]; then
-		if [ $(kubectl -n backend get pod | grep Terminating | wc -l) -eq 0 ]; then
+		if [ $(kubectl -n backend get pod | grep Terminating | wc -l) -eq 0 ] && [ $(kubectl -n backend get pod | grep Init | wc -l) -eq 0 ]; then
 			break
 		fi
 	fi
